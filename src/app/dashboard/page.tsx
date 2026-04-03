@@ -67,10 +67,30 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        <div className="mt-12 p-8 rounded-2xl bg-white/[0.02] border border-white/5 text-center">
-          <p className="text-zinc-500 text-sm">
-            🚧 DSA Curriculum, IDE Workspace, and AI Interview Agent are coming in the next phases.
-          </p>
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="p-8 rounded-2xl bg-gradient-to-br from-indigo-500/10 to-purple-600/10 border border-indigo-500/20 flex flex-col items-start">
+            <h3 className="text-xl font-bold text-white mb-2">DSA Curriculum</h3>
+            <p className="text-zinc-400 text-sm mb-6">
+              Master the data structures and algorithms patterns to ace your technical interviews.
+            </p>
+            <Link href="/problems">
+              <button className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-lg shadow-indigo-600/20 font-medium transition-all">
+                Browse Problems
+              </button>
+            </Link>
+          </div>
+          
+          <div className="p-8 rounded-2xl bg-white/[0.02] border border-white/5 flex flex-col items-start opacity-70">
+            <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+              AI Interview Agent <span className="text-xs bg-white/10 px-2 py-0.5 rounded text-zinc-300">Coming Soon</span>
+            </h3>
+            <p className="text-zinc-400 text-sm mb-6">
+              Practice mock interviews with our AI agent to improve your communication and problem-solving skills under pressure.
+            </p>
+            <button disabled className="px-5 py-2.5 bg-white/5 text-zinc-500 rounded-lg font-medium cursor-not-allowed">
+              Locked
+            </button>
+          </div>
         </div>
       </main>
     </div>

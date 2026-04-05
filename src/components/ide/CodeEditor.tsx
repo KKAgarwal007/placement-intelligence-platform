@@ -34,24 +34,16 @@ export default function CodeEditor({ value, language, onChange, problemId, readO
     }
   }, [monaco]);
 
-  // Load from LocalStorage
+  // Initialization
   useEffect(() => {
     setMounted(true);
-    const saved = localStorage.getItem(`code-${problemId}`);
-    if (saved) {
-      setCode(saved);
-      onChange(saved);
-    } else {
-      setCode(value);
-      onChange(value);
-    }
-  }, [problemId, value, onChange]);
+  }, []);
 
   const handleEditorChange = (newValue: string | undefined) => {
     setCode(newValue || "");
     onChange(newValue);
     if (newValue) {
-      localStorage.setItem(`code-${problemId}`, newValue);
+      localStorage.setItem(`code-${problemId}-${language}`, newValue);
     }
   };
 
@@ -72,7 +64,7 @@ export default function CodeEditor({ value, language, onChange, problemId, readO
     <Editor
       height="100%"
       language={language}
-      value={code}
+      value={value}
       theme="placement-os-dark"
       onChange={handleEditorChange}
       onMount={handleEditorDidMount}

@@ -5,7 +5,7 @@ import { getToken } from "next-auth/jwt";
 async function proxy(request: NextRequest) {
   const token = await getToken({
     req: request,
-    secret: process.env.NEXTAUTH_SECRET,
+    secret: process.env.AUTH_SECRET,
   });
 
   const isProtected = request.nextUrl.pathname.startsWith("/dashboard");

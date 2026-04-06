@@ -5,12 +5,21 @@ import bcrypt from "bcryptjs";
 import connectToDatabase from "@/lib/db";
 import { User } from "@/models/User";
 
+const googleConfigured =
+  !!process.env.GOOGLE_CLIENT_ID && !!process.env.GOOGLE_CLIENT_SECRET;
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
+    // Only include Google provider when credentials are actually configured.
+    // Passing empty strings to Google() causes NextAuth v5 to throw [object Object].
+    ...(googleConfigured
+      ? [
+          Google({
+            clientId: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+          }),
+        ]
+      : []),
     Credentials({
       name: "credentials",
       credentials: {
@@ -24,10 +33,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           await connectToDatabase();
         } catch (err) {
           console.error("[AUTH] MongoDB connection failed:", err);
-          throw new Error("Database unavailable. Check your network or MongoDB Atlas IP whitelist.");
+          throw new Error(
+            "Database unavailable. Check your network or MongoDB Atlas IP whitelist."
+          );
         }
 
-        const user = await User.findOne({ email: credentials.email }).lean() as {
+        const user = (await User.findOne({ email: credentials.email }).lean()) as {
           _id: { toString(): string };
           name: string;
           email: string;
@@ -60,8 +71,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user) {
         token.id = user.id;
       }
-      // If signing in with Google, upsert user in DB
-      if (account?.provider === "google" && profile?.email) {
+      // Only upsert Google user in DB when provider is configured and being used
+      if (googleConfigured && account?.provider === "google" && profile?.email) {
         try {
           await connectToDatabase();
           const existing = await User.findOne({ email: profile.email });
@@ -77,7 +88,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           }
         } catch (err) {
           console.error("[AUTH] Google callback DB error:", err);
-          // Still allow the session — just without a DB-linked ID
           token.id = profile.email;
         }
       }
